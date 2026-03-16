@@ -1,10 +1,12 @@
 import React from "react";
 import { Text, StyleSheet, View, Image, Dimensions } from "react-native";
 import { Button } from "react-native-elements";
+import { useRouter } from "expo-router";
 
 const WelcomeScreen = () => {
   const screenHeight = Dimensions.get("window").height;
   const imageHeight = screenHeight * 0.5;
+  const router = useRouter();
 
   return (
     <View style={styles.wrapper}>
@@ -30,7 +32,7 @@ const WelcomeScreen = () => {
         <Button
           buttonStyle={styles.button}
           title="Click Here to Continue"
-          onPress={() => console.log("Pressed!")}
+          onPress={() => router.push("/login")}
         />
       </View>
     </View>
