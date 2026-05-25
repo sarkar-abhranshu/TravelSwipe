@@ -4,31 +4,31 @@ import AuthForm from "../components/AuthForm";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 
-const LoginScreen = () => {
+const SignupScreen = () => {
   const router = useRouter();
-  const { login } = useAuth();
-  const [loading, setIsLoading] = useState(false);
+  const { signup } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (email: string, password: string) => {
+  const handleSignup = async (email: string, password: string) => {
     try {
-      setIsLoading(true);
-      await login(email, password);
-      setIsLoading(false);
+      setLoading(true);
+      setError("");
+      await signup(email, password);
       router.push("/home");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || "Signup failed");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
     <View>
       <AuthForm
-        mode="login"
-        onSubmit={handleLogin}
-        onSwitchMode={() => router.push("/signup")}
+        mode="signup"
+        onSubmit={handleSignup}
+        onSwitchMode={() => router.push("/login")}
         error={error}
         loading={loading}
       />
@@ -36,4 +36,4 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default SignupScreen;

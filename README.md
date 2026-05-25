@@ -1,50 +1,71 @@
-# Welcome to your Expo app 👋
+# TravelSwipe
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native travel destination recommender and itinerary planner. Browse destinations with a swipe mechanic — the more you swipe, the better your recommendations get.
 
-## Get started
+## Features
+
+### Implemented
+- **Welcome Screen** — Full-screen hero image with a rounded overlay card, app description, and a CTA button navigating to login
+- **Login Screen** — Email/password fields with drop shadows, a primary Login button, an OR divider, a Google OAuth button (UI complete with Google logo), and a Sign Up link
+- **File-based routing** via Expo Router with headers hidden globally
+- **TypeScript** with path aliases (`@/*` maps to project root)
+
+### Planned
+- Swipe card deck UI for browsing destinations
+- Bottom tab navigation
+- Travel itinerary generation screen
+- Google OAuth flow (authentication)
+- Sign Up screen
+- Haptic feedback on swipe
+- Recommendation engine (backend)
+
+## Tech Stack
+
+| Category | Technology |
+|---|---|
+| Framework | React Native 0.81.5 + Expo SDK 54 |
+| Router | Expo Router 6 (file-based) |
+| Language | TypeScript |
+| Gestures | react-native-gesture-handler |
+| Animations | react-native-reanimated |
+| UI Components | react-native-elements, react-native-drop-shadow |
+| Auth | expo-web-browser (OAuth) |
+
+## Project Structure
+
+```
+app/
+├── _layout.tsx       # Root Stack layout (headers hidden)
+├── index.tsx         # / route → WelcomeScreen
+└── login.tsx         # /login route → LoginScreen
+
+screens/
+├── WelcomeScreen.tsx
+└── LoginScreen.tsx
+
+assets/
+├── mountain.jpg      # Hero image (WelcomeScreen)
+└── google.jpg        # Google OAuth logo (LoginScreen)
+```
+
+## Getting Started
 
 1. Install dependencies
-
    ```bash
    npm install
    ```
 
 2. Start the app
-
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+   Then open in an iOS simulator, Android emulator, or Expo Go.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Branch History
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+| Branch | Description |
+|---|---|
+| `main` / `frontend` | Initial project scaffold |
+| `welcomeScreen` | Welcome screen prototype |
+| `loginScreen` | Login screen with email/password and OAuth UI |
