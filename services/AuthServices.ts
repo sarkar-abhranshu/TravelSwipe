@@ -14,15 +14,18 @@ export const authService = {
     }
   },
   async signup(email: string, password: string) {
-    try {
-      const response = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error("Error with Signup, please try again.");
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    if (error) {
+      console.error("Signup error:", error);
+      throw error;
     }
+    if (data.user && !data.session) {
+      console.log("Email confirmation required for:", data.user.email);
+    }
+    return data;
   },
   async logout() {
     await supabase.auth.signOut();

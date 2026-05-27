@@ -17,14 +17,19 @@ const SignupScreen = () => {
       await signup(email, password);
       router.push("/home");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Signup failed");
+      setError("Signup error in screen:", err);
+      const errorMessage =
+        err.message ||
+        err.error_description ||
+        "Signup failed. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <AuthForm
         mode="signup"
         onSubmit={handleSignup}

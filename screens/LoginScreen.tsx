@@ -24,7 +24,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <AuthForm
         mode="login"
         onSubmit={handleLogin}

@@ -60,12 +60,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signup = async (email: string, password: string) => {
-    try {
-      const data = await authService.signup(email, password);
+    const data = await authService.signup(email, password);
+
+    if (data.session) {
       setUser(data.user);
-      console.log("User signd up!");
-    } catch (error) {
-      throw new Error("Signup failed" + error);
+      console.log("User signed up with session:", data.user?.email);
+    } else {
+      throw new Error("Signup failed - no user data returned");
     }
   };
 
