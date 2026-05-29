@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { authService, configureGoogleSignin } from "@/services/AuthServices";
 import { supabase } from "@/utils/supabase";
+import { Profile } from "@/types/database";
 
 interface AuthContextType {
   user: any | null;

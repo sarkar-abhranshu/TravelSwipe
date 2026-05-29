@@ -57,7 +57,7 @@ export const configureGoogleSignin = () => {
 // ---------------------------------------------------------------------------
 // Auth service
 // ---------------------------------------------------------------------------
-const isEmail = (input: stirng): boolean => {
+const isEmail = (input: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(input);
 };
@@ -67,6 +67,7 @@ export const authService = {
     let email = identifier;
 
     if (!isEmail(identifier)) {
+      console.log("Looking up username:", identifier);
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("email")
@@ -74,10 +75,12 @@ export const authService = {
         .single();
 
       if (profileError || !profile) {
+        console.error("Username lookup failed:", profileError);
         throw new Error("Username not found");
       }
 
       email = profile.email;
+      console.log("Found email for username:", email);
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -90,6 +93,10 @@ export const authService = {
   },
 
   async signup(email: string, password: string, username?: string) {
+    if (!username || username.trim() === "") {
+      throw new Error("Username is required");
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -102,7 +109,7 @@ export const authService = {
     });
     if (error) throw new Error(error.message);
     // data.session is null when email confirmation is required
-    if (data.user && username) {
+    if (data.user) {
       const { error: profileError } = await supabase.from("profiles").insert({
         user_id: data.user.id,
         email: email,
@@ -110,8 +117,11 @@ export const authService = {
       });
 
       if (profileError) {
-        console.warn("Failed to create profile:", profileError);
+        console.error("Failed to create profile:", profileError);
+        throw new Error(`Failed to create profile: ${profileError.message}`);
       }
+    } else {
+      throw new Error("Signup failed - no user created");
     }
     return data;
   },

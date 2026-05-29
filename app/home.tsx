@@ -15,6 +15,6 @@ export default function Home() {
     return <Redirect href="/login" />;
   }
 
-  const displayName = profile?.usrname || user.user_metadata.name || "User";
+  const displayName = profile?.username || user.user_metadata.name || "User";
   return <Text>Welcome, {displayName}!</Text>;
 }
