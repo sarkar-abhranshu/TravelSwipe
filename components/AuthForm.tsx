@@ -15,7 +15,7 @@ import {
 
 interface AuthFormProps {
   mode: "login" | "signup";
-  onSubmit: (email: string, password: string) => void;
+  onSubmit: (email: string, password: string, name?: string) => void;
   onSwitchMode: () => void;
   onGoogleSignIn: () => void;
   error?: string;
@@ -30,6 +30,7 @@ const AuthForm = ({
   error,
   loading,
 }: AuthFormProps) => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -37,15 +38,24 @@ const AuthForm = ({
 
   const handleSubmit = () => {
     setValidationError("");
-    if (!email || !password) {
-      setValidationError("Please fill in all fields.");
-      return;
+
+    if (mode === "signup") {
+      if (!name || !email || !password) {
+        setValidationError("Please fill in all fields.");
+        return;
+      }
+      if (password !== confirmPassword) {
+        setValidationError("Passwords do not match.");
+        return;
+      }
+      onSubmit(email, password, name);
+    } else {
+      if (!email || !password) {
+        setValidationError("Please fill in all fields.");
+        return;
+      }
+      onSubmit(email, password);
     }
-    if (mode === "signup" && password !== confirmPassword) {
-      setValidationError("Passwords do not match.");
-      return;
-    }
-    onSubmit(email, password);
   };
 
   const displayError = validationError || error;
@@ -84,18 +94,45 @@ const AuthForm = ({
             </View>
           ) : null}
 
-          {/* Email */}
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="you@example.com"
-            placeholderTextColor="#aaa"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+          {mode === "login" ? (
+            <>
+              <Text style={styles.label}>Username or Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your username or email"
+                placeholderTextColor="#aaa"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </>
+          ) : (
+            <>
+              <Text style={styles.label}>Username</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your username"
+                placeholderTextColor="#aaa"
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor="#aaa"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </>
+          )}
 
           {/* Password */}
           <Text style={styles.label}>Password</Text>

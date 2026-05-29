@@ -10,11 +10,15 @@ const SignupScreen = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSignup = async (email: string, password: string) => {
+  const handleSignup = async (
+    email: string,
+    password: string,
+    username?: string,
+  ) => {
     try {
       setLoading(true);
       setError("");
-      await signup(email, password);
+      await signup(email, password, username);
       router.push("/home");
     } catch (err: any) {
       setError("Signup error in screen:", err);

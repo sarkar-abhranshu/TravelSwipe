@@ -4,10 +4,11 @@ import { supabase } from "@/utils/supabase";
 
 interface AuthContextType {
   user: any | null;
+  profile: Profile | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (identifier: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
-  signup: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string, username?: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -15,7 +16,28 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const fetchProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (error) {
+        if (error.code !== "PGRST116") {
+          throw error;
+        }
+      }
+      setProfile(data);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      setProfile(null);
+    }
+  };
 
   useEffect(() => {
     configureGoogleSignin(); // Async but we don't await - it will configure in background
@@ -26,6 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
         setUser(session.user);
+        await fetchProfile(session.user.id);
       } else {
         setUser(null);
       }
@@ -43,6 +66,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         data: { session },
       } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
+
+      if (session?.user) {
+        await fetchProfile(session.user.id);
+      }
     } catch (error) {
       throw new Error("Auth check failed" + error);
     } finally {
@@ -50,11 +77,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (identifier: string, password: string) => {
     try {
-      await authService.login(email, password);
+      await authService.login(identifier, password);
       const user = await authService.getUser();
       setUser(user);
+      if (user) {
+        await fetchProfile(user.id);
+      }
       console.log("User logged in", user);
     } catch (error) {
       throw new Error("Login failed" + error);
@@ -65,16 +95,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const data = await authService.loginWithGoogle();
       setUser(data.user);
+      if (data.user) {
+        await fetchProfile(data.user.id);
+      }
     } catch (error) {
       throw error;
     }
   };
 
-  const signup = async (email: string, password: string) => {
-    const data = await authService.signup(email, password);
+  const signup = async (email: string, password: string, username?: string) => {
+    const data = await authService.signup(email, password, username);
 
     if (data.session) {
       setUser(data.user);
+      if (data.user) {
+        await fetchProfile(data.user.id);
+      }
       console.log("User signed up with session:", data.user?.email);
     } else {
       throw new Error("Signup failed - no user data returned");
@@ -85,6 +121,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       await authService.logout();
       setUser(null);
+      setProfile(null);
     } catch (error) {
       throw new Error("Logout failed" + error);
     }
@@ -92,7 +129,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, login, signup, logout, loginWithGoogle }}
+      value={{
+        user,
+        profile,
+        isLoading,
+        login,
+        signup,
+        logout,
+        loginWithGoogle,
+      }}
     >
       {children}
     </AuthContext.Provider>

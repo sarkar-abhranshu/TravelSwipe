@@ -3,7 +3,7 @@ import { Redirect } from "expo-router";
 import { Text } from "react-native";
 
 export default function Home() {
-  const { user, isLoading } = useAuth();
+  const { user, profile, isLoading } = useAuth();
 
   console.log("User object:", JSON.stringify(user, null, 2));
 
@@ -15,5 +15,6 @@ export default function Home() {
     return <Redirect href="/login" />;
   }
 
-  return <Text>Welcome, {user.user_metadata.name}!</Text>;
+  const displayName = profile?.usrname || user.user_metadata.name || "User";
+  return <Text>Welcome, {displayName}!</Text>;
 }

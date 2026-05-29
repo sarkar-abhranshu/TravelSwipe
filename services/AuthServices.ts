@@ -57,22 +57,61 @@ export const configureGoogleSignin = () => {
 // ---------------------------------------------------------------------------
 // Auth service
 // ---------------------------------------------------------------------------
+const isEmail = (input: stirng): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(input);
+};
+
 export const authService = {
-  async login(email: string, password: string) {
+  async login(identifier: string, password: string) {
+    let email = identifier;
+
+    if (!isEmail(identifier)) {
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("username", identifier)
+        .single();
+
+      if (profileError || !profile) {
+        throw new Error("Username not found");
+      }
+
+      email = profile.email;
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+
     if (error) throw new Error(error.message);
     return data;
   },
 
-  async signup(email: string, password: string) {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+  async signup(email: string, password: string, username?: string) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username: username,
+          name: username,
+        },
+      },
+    });
     if (error) throw new Error(error.message);
     // data.session is null when email confirmation is required
-    if (data.user && !data.session) {
-      console.log("Email confirmation required for:", data.user.email);
+    if (data.user && username) {
+      const { error: profileError } = await supabase.from("profiles").insert({
+        user_id: data.user.id,
+        email: email,
+        username: username,
+      });
+
+      if (profileError) {
+        console.warn("Failed to create profile:", profileError);
+      }
     }
     return data;
   },
