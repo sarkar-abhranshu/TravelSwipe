@@ -17,6 +17,7 @@ interface AuthFormProps {
   mode: "login" | "signup";
   onSubmit: (email: string, password: string) => void;
   onSwitchMode: () => void;
+  onGoogleSignIn: () => void;
   error?: string;
   loading?: boolean;
 }
@@ -25,6 +26,7 @@ const AuthForm = ({
   mode,
   onSubmit,
   onSwitchMode,
+  onGoogleSignIn,
   error,
   loading,
 }: AuthFormProps) => {
@@ -150,7 +152,7 @@ const AuthForm = ({
           {/* Google OAuth */}
           <TouchableOpacity
             style={styles.googleButton}
-            onPress={() => console.log("OAuth Pressed")}
+            onPress={onGoogleSignIn}
             activeOpacity={0.85}
           >
             <Image

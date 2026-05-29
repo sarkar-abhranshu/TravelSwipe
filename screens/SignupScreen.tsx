@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const SignupScreen = () => {
   const router = useRouter();
-  const { signup } = useAuth();
+  const { signup, loginWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -28,11 +28,25 @@ const SignupScreen = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      await loginWithGoogle();
+      router.push("/home");
+    } catch (err: any) {
+      setError(err.message || "Google sign-in failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <AuthForm
         mode="signup"
         onSubmit={handleSignup}
+        onGoogleSignIn={handleGoogleSignIn}
         onSwitchMode={() => router.push("/login")}
         error={error}
         loading={loading}

@@ -9,18 +9,30 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.travelswipe"
+      "bundleIdentifier": "com.absarkar.travelswipe",
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.434894631813-6vgtmutnms86l0sjj8pc196bbs7n4so0"
+            ]
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE"
       },
-      "package": "com.yourcompany.travelswipe"
+      "package": "com.absarkar.travelswipe"
     },
     "web": {
       "output": "static"
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router",
+      "expo-web-browser"
+    ],
     "experiments": {
       "typedRoutes": true
     }

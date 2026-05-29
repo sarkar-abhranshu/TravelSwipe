@@ -6,18 +6,31 @@ import { useAuth } from "@/context/AuthContext";
 
 const LoginScreen = () => {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const [loading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleLogin = async (email: string, password: string) => {
     try {
       setIsLoading(true);
+      setError("");
       await login(email, password);
-      setIsLoading(false);
       router.push("/home");
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsLoading(true);
+      setError("");
+      await loginWithGoogle();
+      router.push("/home");
+    } catch (err: any) {
+      setError(err.message || "Google sign-in failed");
     } finally {
       setIsLoading(false);
     }
@@ -29,6 +42,7 @@ const LoginScreen = () => {
         mode="login"
         onSubmit={handleLogin}
         onSwitchMode={() => router.push("/signup")}
+        onGoogleSignIn={handleGoogleSignIn}
         error={error}
         loading={loading}
       />

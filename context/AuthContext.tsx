@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { authService } from "@/services/AuthServices";
+import { authService, configureGoogleSignin } from "@/services/AuthServices";
 import { supabase } from "@/utils/supabase";
 
 interface AuthContextType {
   user: any | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -17,6 +18,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    configureGoogleSignin(); // Async but we don't await - it will configure in background
     checkAuth();
 
     const {
@@ -59,6 +61,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const loginWithGoogle = async () => {
+    try {
+      const data = await authService.loginWithGoogle();
+      setUser(data.user);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const signup = async (email: string, password: string) => {
     const data = await authService.signup(email, password);
 
@@ -80,7 +91,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, login, signup, logout, loginWithGoogle }}
+    >
       {children}
     </AuthContext.Provider>
   );
