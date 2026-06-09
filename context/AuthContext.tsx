@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { authService, configureGoogleSignin } from "@/services/AuthServices";
 import { supabase } from "@/utils/supabase";
-import { Profile } from "@/types/database";
+import { Profile, Preferences } from "@/types/database";
 
 interface AuthContextType {
   user: any | null;
   profile: Profile | null;
+  preferences: Preferences | null;
   isLoading: boolean;
   login: (identifier: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
@@ -18,25 +19,46 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [preferences, setPreferences] = useState<Preferences | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("*")
         .eq("user_id", userId)
         .maybeSingle();
 
-      if (error) {
-        if (error.code !== "PGRST116") {
-          throw error;
+      if (profileError) {
+        if (profileError.code !== "PGRST116") {
+          throw profileError;
         }
       }
-      setProfile(data);
+      setProfile(profileData);
     } catch (error) {
       console.error("Error fetching profile:", error);
       setProfile(null);
+    }
+  };
+
+  const fetchPreferences = async (userId: string) => {
+    try {
+      const { data: preferencesData, error: preferencesError } = await supabase
+        .from("preferences")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (preferencesError) {
+        if (preferencesError.code !== "PGRST116") {
+          throw preferencesError;
+        }
+      }
+      setPreferences(preferencesData);
+    } catch (error) {
+      console.error("Error fetching preferences:", error);
+      setPreferences(null);
     }
   };
 
@@ -50,8 +72,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (session?.user) {
         setUser(session.user);
         await fetchProfile(session.user.id);
+        await fetchPreferences(session.user.id);
       } else {
         setUser(null);
+        setProfile(null);
+        setPreferences(null);
       }
       setIsLoading(false);
     });
@@ -70,6 +95,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (session?.user) {
         await fetchProfile(session.user.id);
+        await fetchPreferences(session.user.id);
       }
     } catch (error) {
       throw new Error("Auth check failed" + error);
@@ -85,6 +111,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(user);
       if (user) {
         await fetchProfile(user.id);
+        await fetchPreferences(user.id);
       }
       console.log("User logged in", user);
     } catch (error) {
@@ -98,6 +125,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(data.user);
       if (data.user) {
         await fetchProfile(data.user.id);
+        await fetchPreferences(data.user.id);
       }
     } catch (error) {
       throw error;
@@ -111,6 +139,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(data.user);
       if (data.user) {
         await fetchProfile(data.user.id);
+        await fetchPreferences(data.user.id);
       }
       console.log("User signed up with session:", data.user?.email);
     } else {
@@ -123,6 +152,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       await authService.logout();
       setUser(null);
       setProfile(null);
+      setPreferences(null);
     } catch (error) {
       throw new Error("Logout failed" + error);
     }
@@ -133,6 +163,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         user,
         profile,
+        preferences,
         isLoading,
         login,
         signup,
