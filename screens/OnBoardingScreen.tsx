@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const OnboardingScreen = () => {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const handleContinue = async () => {
@@ -31,6 +31,8 @@ const OnboardingScreen = () => {
       }
 
       console.log("✅ Onboarding completed for user:", user.id);
+
+      await refreshProfile();
       router.push("/preferences");
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -47,7 +49,7 @@ const OnboardingScreen = () => {
         Let's get you set up with a quick onboarding process
       </Text>
       <TouchableOpacity
-        style={(styles.button, loading && styles.buttonDisabled)}
+        style={[styles.button, loading && styles.buttonDisabled]}
         onPress={handleContinue}
       >
         <Text style={styles.buttonText}>

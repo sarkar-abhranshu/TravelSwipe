@@ -18,7 +18,7 @@ import { supabase } from "@/utils/supabase";
 
 export default function PreferencesScreen() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
 
   const [formData, setFormData] = useState({
     locationGranted: false,
@@ -130,6 +130,8 @@ export default function PreferencesScreen() {
       }
 
       console.log("✅ Profile updated with preferences_completed flag");
+
+      await refreshProfile();
 
       Alert.alert("Success", "Preferences saved!", [
         {

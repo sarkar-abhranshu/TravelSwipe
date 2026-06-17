@@ -12,6 +12,7 @@ interface AuthContextType {
   loginWithGoogle: () => Promise<void>;
   signup: (email: string, password: string, username?: string) => Promise<void>;
   logout: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -60,6 +61,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("Error fetching preferences:", error);
       setPreferences(null);
     }
+  };
+
+  const refreshProfile = async () => {
+    if (!user) {
+      console.warn("Cannot refresh profile: no user logged in");
+      return;
+    }
+    console.log("🔄 Refreshing profile and preferences...");
+    await fetchProfile(user.id);
+    await fetchPreferences(user.id);
+    console.log("✅ Profile and preferences refreshed");
   };
 
   useEffect(() => {
@@ -169,6 +181,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         signup,
         logout,
         loginWithGoogle,
+        refreshProfile,
       }}
     >
       {children}
