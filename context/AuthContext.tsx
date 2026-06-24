@@ -127,7 +127,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       console.log("User logged in", user);
     } catch (error) {
-      throw new Error("Login failed" + error);
+      console.error("Login failed:", error);
+      throw error;
     }
   };
 
