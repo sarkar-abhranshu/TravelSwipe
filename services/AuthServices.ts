@@ -95,6 +95,9 @@ export const authService = {
 
     if (error) {
       console.error("Sign in error:", error);
+      if (error.message.includes("Invalid login credentials")) {
+        throw new Error("Invalid email/username or password.");
+      }
       throw new Error(error.message);
     }
     return data;
