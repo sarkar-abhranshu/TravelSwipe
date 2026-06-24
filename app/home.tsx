@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { Redirect } from "expo-router";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
+import DestinationCard from "@/components/DestinationCard";
 
 export default function Home() {
   const { user, profile, isLoading } = useAuth();
@@ -22,5 +23,10 @@ export default function Home() {
   if (!preferences) {
     return <Redirect href="/preferences" />;
   }
-  return <Text>Welcome, {displayName}!</Text>;
+  return (
+    <View>
+      <Text>Welcome, {displayName}!</Text>
+      <DestinationCard title="Destination 1" />
+    </View>
+  );
 }
