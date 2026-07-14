@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { authService, configureGoogleSignin } from "@/services/AuthServices";
+import { authService, configureGoogleSignin } from "@/services/authService";
 import { supabase } from "@/utils/supabase";
 import { Profile, Preferences } from "@/types/database";
 

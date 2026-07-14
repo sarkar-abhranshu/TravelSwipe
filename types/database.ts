@@ -17,3 +17,17 @@ export interface Preferences {
   closeDest: boolean;
   tripDuration: number;
 }
+
+export interface Destination {
+  id: string;
+  name: string;
+  image_url: string;
+  short_description: string;
+  full_description: string;
+  country: string;
+  tags: string[];
+  trip_duration_min: number;
+  trip_duration_max: number;
+  latitude: number;
+  longitude: number;
+}
