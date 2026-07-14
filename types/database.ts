@@ -16,6 +16,7 @@ export interface Preferences {
   };
   closeDest: boolean;
   tripDuration: number;
+  preferredTags: string[];
 }
 
 export interface Destination {
