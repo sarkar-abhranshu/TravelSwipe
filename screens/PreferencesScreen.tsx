@@ -117,26 +117,12 @@ export default function PreferencesScreen() {
 
       console.log("✅ Preferences saved successfully");
 
-      // Update preferences_completed flag in profiles
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({ preferences_completed: true })
-        .eq("user_id", user.id);
-
-      if (profileError) {
-        console.error("❌ Error updating profile:", profileError);
-        Alert.alert("Error", "Failed to update profile");
-        return;
-      }
-
-      console.log("✅ Profile updated with preferences_completed flag");
-
       await refreshProfile();
 
       Alert.alert("Success", "Preferences saved!", [
         {
           text: "OK",
-          onPress: () => router.push("/home"),
+          onPress: () => router.push("/vibescreen"),
         },
       ]);
     } catch (error) {
