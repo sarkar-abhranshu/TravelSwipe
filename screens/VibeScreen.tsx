@@ -5,6 +5,7 @@ import VibeCard from '../components/VibeCard';
 import { supabase } from '@/utils/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { Alert } from 'react-native';
+import { VIBES } from '@/constants/vibes';
 
 const VibeScreen: React.FC = () => {
   const router = useRouter();
@@ -28,7 +29,7 @@ const VibeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <VibeCard />
+      <VibeCard id={VIBES[5].id} />
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>

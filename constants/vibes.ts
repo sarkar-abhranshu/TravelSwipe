@@ -14,7 +14,7 @@ export const VIBES: Vibe[] = [
     emoji: "🏔️",
     description: "You live for the thrill of high passes, hard trails, and sleeping under the stars",
     imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Key_Monastery_Spiti_Valley.jpg/1280px-Key_Monastery_Spiti_Valley.jpg",
+      "https://images.unsplash.com/photo-1606053080680-5f74eca7c8cd?fm=jpg&q=80&w=1280&auto=format&fit=crop",
     tags: ["mountains", "trekking", "high-altitude", "camping"],
   },
   {
@@ -23,7 +23,7 @@ export const VIBES: Vibe[] = [
     emoji: "🏖️",
     description: "You love everything about beaches — the sound, the salt, and the slow pace",
     imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Radhanagar_Beach_Andaman.jpg/1280px-Radhanagar_Beach_Andaman.jpg",
+      "https://images.unsplash.com/photo-1566323124805-757e5c41d37c?fm=jpg&q=80&w=1280&auto=format&fit=crop",
     tags: ["beach", "islands", "water-sports", "relaxation"],
   },
   {
@@ -32,7 +32,7 @@ export const VIBES: Vibe[] = [
     emoji: "🏛️",
     description: "You love places with deep lore — ruins, forts, and stories carved in stone",
     imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Virupaksha_Temple_Hampi.jpg/1280px-Virupaksha_Temple_Hampi.jpg",
+      "https://images.unsplash.com/photo-1620766182966-c6eb5ed2b788?q=80&w=1348&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     tags: ["heritage", "history", "temples", "architecture"],
   },
   {
@@ -41,7 +41,7 @@ export const VIBES: Vibe[] = [
     emoji: "🌿",
     description: "Forests, wildlife, and open skies — you'd rather be outdoors than anywhere else",
     imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/One_Horned_Rhinoceros_Kaziranga.jpg/1280px-One_Horned_Rhinoceros_Kaziranga.jpg",
+      "https://images.unsplash.com/photo-1723745390402-04eeda8b6444?fm=jpg&q=80&w=1280&auto=format&fit=crop",
     tags: ["nature", "wildlife", "safari", "forests"],
   },
   {
@@ -50,7 +50,7 @@ export const VIBES: Vibe[] = [
     emoji: "🧘",
     description: "You travel to reset — ashrams, quiet coastlines, and places that ask nothing of you",
     imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Laxman_Jhula_Rishikesh.jpg/1280px-Laxman_Jhula_Rishikesh.jpg",
+      "https://images.unsplash.com/photo-1691735214703-310c6594c6a8?q=80&w=2346&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     tags: ["spiritual", "yoga", "ayurveda", "relaxation"],
   },
   {
@@ -59,7 +59,7 @@ export const VIBES: Vibe[] = [
     emoji: "🗺️",
     description: "You go where the maps get vague — hidden valleys, forgotten towns, roads less taken",
     imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Living_root_bridge_Meghalaya.jpg/1280px-Living_root_bridge_Meghalaya.jpg",
+      "https://images.unsplash.com/photo-1566376011138-ce2c615e7701?fm=jpg&q=80&w=1280&auto=format&fit=crop",
     tags: ["offbeat", "northeast-india", "unique", "adventure"],
   },
 ];
