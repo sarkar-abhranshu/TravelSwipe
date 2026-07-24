@@ -33,7 +33,6 @@ export default function VibeCard({ id }: VibeCardProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 59,
     justifyContent: 'flex-start',
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,

@@ -119,12 +119,7 @@ export default function PreferencesScreen() {
 
       await refreshProfile();
 
-      Alert.alert("Success", "Preferences saved!", [
-        {
-          text: "OK",
-          onPress: () => router.push("/vibescreen"),
-        },
-      ]);
+      router.push("/vibescreen");
     } catch (error) {
       console.error("❌ Unexpected error:", error);
       Alert.alert("Error", "Something went wrong");
