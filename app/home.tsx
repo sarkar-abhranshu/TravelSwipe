@@ -17,12 +17,24 @@ export default function Home() {
 
   const displayName = profile?.username || user.user_metadata.name || "User";
   const onboarding = profile?.onboarding_completed;
-  const preferences = profile?.preferences_completed;
   if (!onboarding) {
     return <Redirect href="/onboarding" />;
   }
-  if (!preferences) {
+
+  const { preferences } = useAuth();
+
+  const hasBasicPreferences = preferences &&
+    preferences.locationWhenInUsePermission !== null &&
+    preferences.location !== null &&
+    preferences.closeDest !== null &&
+    preferences.tripDuration !== null;
+
+  if (!hasBasicPreferences) {
     return <Redirect href="/preferences" />;
+  }
+
+  if (!profile?.preferences_completed) {
+    return <Redirect href="/vibescreen" />;
   }
 
   const { destinations, loading, loadingMore, hasMore, error, loadMore } =
