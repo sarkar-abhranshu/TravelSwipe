@@ -45,16 +45,6 @@ Built with modern technologies including:
 
 ---
 
-## 🎥 Project Demo
-
-Check out TravelSwipe in action:
-
-![TravelSwipe Demo](https://github.com/user-attachments/assets/a58a1852-5a51-4414-a8ab-eaa2044b9ac6)
-
-*Experience the smooth swipe interface and intuitive authentication flow*
-
----
-
 ## 🚀 How to Install and Check It Out Yourself
 
 ### Prerequisites
