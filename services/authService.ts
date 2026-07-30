@@ -68,23 +68,24 @@ export const authService = {
 
     if (!isEmail(identifier)) {
       console.log("Looking up username:", identifier);
-      const { data: emailRes, error: lookupError } = await supabase.rpc(
-        "get_email_from_username",
-        { lookup_username: identifier },
-      );
+      const { data: profileData, error: lookupError } = await supabase
+        .from("profiles")
+        .select("email, user_id")
+        .eq("username", identifier)
+        .single();
 
-      if (lookupError) {
+      if (lookupError || !profileData) {
         console.error("Username lookup failed:", lookupError);
         throw new Error(`Failed to lookup username: ${lookupError.message}`);
       }
 
-      if (!emailRes) {
+      if (!profileData.email) {
         throw new Error(
           "Username not found. Please check your username or use email to login.",
         );
       }
 
-      email = emailRes;
+      email = profileData.email;
       console.log("Found email for username:", email);
     }
 
@@ -100,6 +101,9 @@ export const authService = {
       }
       throw new Error(error.message);
     }
+
+    console.log("Logged in user ID from auth.users:", data.user?.id);
+
     return data;
   },
 
