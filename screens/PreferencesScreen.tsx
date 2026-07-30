@@ -94,7 +94,7 @@ export default function PreferencesScreen() {
           longitude: formData.longitude,
         },
         close_dest: formData.distance === "close", // true if close, false if far
-        trip_duration: formData.duration === "short" ? 3 : 7, // 3 days for short, 7 for long
+        trip_duration: formData.duration === "short" ? "short" : "long",
       };
 
       console.log("📝 Preferences data:", preferencesData);

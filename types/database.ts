@@ -15,7 +15,7 @@ export interface Preferences {
     longitude: number;
   };
   closeDest: boolean;
-  tripDuration: number;
+  tripDuration: string;
   preferredTags: string[];
 }
 
