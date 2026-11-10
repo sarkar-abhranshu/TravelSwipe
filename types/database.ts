@@ -14,15 +14,15 @@ export interface Preferences {
     latitude: number;
     longitude: number;
   };
-  closeDest: boolean;
-  tripDuration: string;
+  farDest: boolean;
+  tripDuration: 'short' | 'long';
   preferredTags: string[];
 }
 
 export interface Destination {
   id: string;
   name: string;
-  image_url: string;
+  image_url: string | null;
   short_description: string;
   full_description: string;
   country: string;

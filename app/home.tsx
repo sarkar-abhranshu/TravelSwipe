@@ -26,8 +26,7 @@ export default function Home() {
   const hasBasicPreferences = preferences &&
     preferences.locationWhenInUsePermission !== null &&
     preferences.location !== null &&
-    preferences.closeDest !== null &&
-    preferences.tripDuration !== null;
+    preferences.farDest !== null;
 
   if (!hasBasicPreferences) {
     return <Redirect href="/preferences" />;
