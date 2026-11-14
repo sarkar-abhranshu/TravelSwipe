@@ -3,6 +3,8 @@ import { Redirect } from "expo-router";
 import { Text, View, Button, StyleSheet } from "react-native";
 import { useDestinations } from "@/hooks/useDestinations";
 import { SafeAreaView } from "react-native-safe-area-context";
+import HomeScreen from "@/screens/HomeScreen";
+
 
 export default function Home() {
   const { user, profile, isLoading, preferences } = useAuth();
@@ -38,39 +40,38 @@ export default function Home() {
 
   const { destinations, loading, loadingMore, hasMore, error, loadMore } =
     useDestinations(preferences);
-  console.log('destinations:', destinations);
-  console.log('loading:', loading);
-  console.log('error:', error);
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.welcome}>Welcome, {displayName}!</Text>
+  return <HomeScreen />;
 
-        {loading && (
-          <Text style={styles.loadingText}>Loading initial data...</Text>
-        )}
+  // return (
+  //   <SafeAreaView style={styles.container}>
+  //     <View style={styles.content}>
+  //       <Text style={styles.welcome}>Welcome, {displayName}!</Text>
 
-        {error && <Text style={styles.errorText}>Error: {error}</Text>}
+  //       {loading && (
+  //         <Text style={styles.loadingText}>Loading initial data...</Text>
+  //       )}
 
-        <Text style={styles.countText}>
-          Destinations loaded: {destinations.length}
-        </Text>
+  //       {error && <Text style={styles.errorText}>Error: {error}</Text>}
 
-        <View style={styles.buttonContainer}>
-          <Button
-            title={loadingMore ? "Loading more..." : "Load More"}
-            onPress={loadMore}
-            disabled={loadingMore || !hasMore}
-          />
-        </View>
+  //       <Text style={styles.countText}>
+  //         Destinations loaded: {destinations.length}
+  //       </Text>
 
-        {!hasMore && (
-          <Text style={styles.noMoreText}>No more destinations to load</Text>
-        )}
-      </View>
-    </SafeAreaView>
-  );
+  //       <View style={styles.buttonContainer}>
+  //         <Button
+  //           title={loadingMore ? "Loading more..." : "Load More"}
+  //           onPress={loadMore}
+  //           disabled={loadingMore || !hasMore}
+  //         />
+  //       </View>
+
+  //       {!hasMore && (
+  //         <Text style={styles.noMoreText}>No more destinations to load</Text>
+  //       )}
+  //     </View>
+  //   </SafeAreaView>
+  // );
 }
 
 const styles = StyleSheet.create({
