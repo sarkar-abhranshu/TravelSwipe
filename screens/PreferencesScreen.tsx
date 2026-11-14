@@ -93,7 +93,7 @@ export default function PreferencesScreen() {
           latitude: formData.latitude,
           longitude: formData.longitude,
         },
-        close_dest: formData.distance === "close", // true if close, false if far
+        fardest: formData.distance === "far", // true if far, false if close
         trip_duration: formData.duration === "short" ? "short" : "long",
       };
 

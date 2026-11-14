@@ -9,26 +9,28 @@ export interface Profile {
 
 export interface Preferences {
   user_id: string;
-  locationWhenInUsePermission: boolean;
+  location_when_in_use_permission: boolean;
   location: {
     latitude: number;
     longitude: number;
   };
-  closeDest: boolean;
-  tripDuration: string;
-  preferredTags: string[];
+  fardest: boolean;
+  trip_duration: 'short' | 'long';
+  preferred_tags: string[];
 }
 
 export interface Destination {
   id: string;
   name: string;
-  image_url: string;
+  image_url: string | null;
   short_description: string;
   full_description: string;
   country: string;
+  region: string | null;
   tags: string[];
   trip_duration_min: number;
   trip_duration_max: number;
   latitude: number;
   longitude: number;
+  created_at: string;
 }

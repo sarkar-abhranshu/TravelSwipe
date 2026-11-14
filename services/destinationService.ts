@@ -11,7 +11,7 @@ export const DestinationServices = {
     error: any;
   }> {
     const { data, error } = await supabase
-      .from("destination")
+      .from("destinations")
       .select("*")
       .range(offset, offset + limit - 1)
       .order("id");
