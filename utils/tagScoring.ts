@@ -13,14 +13,14 @@ export function scoreDestination(
   let score = 0;
 
   // --- Tag overlap: +1 per matching tag ---
-  const preferredSet = new Set(prefs.preferredTags);
+  const preferredSet = new Set(prefs.preferred_tags);
   const tagScore = destination.tags.filter(tag =>
     preferredSet.has(tag)
   ).length;
   score += tagScore * 2; // ×2 so theme match outweighs fit bonuses
 
   // --- Trip duration fit: +2 if user's days fall within destination's range ---
-  const isShortTrip = prefs.tripDuration === 'short';
+  const isShortTrip = prefs.trip_duration === 'short';
   if (isShortTrip) {
     if (destination.trip_duration_min <= 3) score += 2;
   } else {
@@ -46,7 +46,7 @@ export function scoreDestination(
   );
 
   const isNear = distKm < NEAR_KM;
-  const prefersFar = prefs.farDest;
+  const prefersFar = prefs.fardest;
 
   if (!prefersFar) {
     // Prefers close: reward near regardless of trip length

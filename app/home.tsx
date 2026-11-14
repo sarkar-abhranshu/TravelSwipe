@@ -5,7 +5,7 @@ import { useDestinations } from "@/hooks/useDestinations";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home() {
-  const { user, profile, isLoading } = useAuth();
+  const { user, profile, isLoading, preferences } = useAuth();
 
   if (isLoading) {
     return <Text>Loading...</Text>;
@@ -21,14 +21,14 @@ export default function Home() {
     return <Redirect href="/onboarding" />;
   }
 
-  const { preferences } = useAuth();
-
   const hasBasicPreferences = preferences &&
-    preferences.locationWhenInUsePermission !== null &&
+    preferences.location_when_in_use_permission !== null &&
     preferences.location !== null &&
-    preferences.farDest !== null;
+    preferences.fardest !== null &&
+    preferences.trip_duration !== null &&
+    preferences.preferred_tags?.length > 0;
 
-  if (!hasBasicPreferences) {
+  if (!preferences || !hasBasicPreferences) {
     return <Redirect href="/preferences" />;
   }
 
@@ -37,8 +37,10 @@ export default function Home() {
   }
 
   const { destinations, loading, loadingMore, hasMore, error, loadMore } =
-    useDestinations();
-  console.log(destinations);
+    useDestinations(preferences);
+  console.log('destinations:', destinations);
+  console.log('loading:', loading);
+  console.log('error:', error);
 
   return (
     <SafeAreaView style={styles.container}>
