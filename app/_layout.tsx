@@ -1,13 +1,16 @@
 import { AuthProvider } from "@/context/AuthContext";
 import { Stack } from "expo-router";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <AuthProvider>
-        <Stack screenOptions={{ headerShown: false }} />
-      </AuthProvider>
-    </GestureHandlerRootView>
+    <AuthProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        {/* Disable iOS swipe-back on home — it conflicts with the card swipe */}
+        <Stack.Screen
+          name="home"
+          options={{ gestureEnabled: false }}
+        />
+      </Stack>
+    </AuthProvider>
   );
 }

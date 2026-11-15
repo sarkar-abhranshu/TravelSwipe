@@ -5,7 +5,6 @@ import {
   Image,
   StyleSheet,
   Dimensions,
-  TouchableOpacity,
   Animated,
   PanResponder,
   StatusBar,
@@ -73,6 +72,7 @@ interface DestinationCardProps {
   pan: Animated.ValueXY;
   isTop: boolean;
   stackIndex: number;
+  panHandlers: any;
 }
 
 const DestinationCard = ({
@@ -81,6 +81,7 @@ const DestinationCard = ({
   pan,
   isTop,
   stackIndex,
+  panHandlers,
 }: DestinationCardProps) => {
   const rotate = pan.x.interpolate({
     inputRange: [-width / 2, 0, width / 2],
@@ -88,7 +89,6 @@ const DestinationCard = ({
     extrapolate: "clamp",
   });
 
-  // Cards behind scale slightly smaller and shift down a touch
   const behindScale = 1 - stackIndex * 0.04;
   const behindTranslateY = stackIndex * 10;
 
@@ -96,21 +96,14 @@ const DestinationCard = ({
     ? [
         styles.card,
         {
-          transform: [
-            { translateX: pan.x },
-            { translateY: pan.y },
-            { rotate },
-          ],
+          transform: [{ translateX: pan.x }, { translateY: pan.y }, { rotate }],
           zIndex: 10,
         },
       ]
     : [
         styles.card,
         {
-          transform: [
-            { scale: behindScale },
-            { translateY: behindTranslateY },
-          ],
+          transform: [{ scale: behindScale }, { translateY: behindTranslateY }],
           zIndex: 10 - stackIndex,
         },
       ];
@@ -122,25 +115,23 @@ const DestinationCard = ({
       : `${destination.distanceKm} km`;
 
   return (
-    <Animated.View style={cardStyle}>
-      {/* Full-bleed image — tappable to open detail */}
-      <TouchableOpacity
-        activeOpacity={0.97}
-        onPress={onImagePress}
-        style={StyleSheet.absoluteFill}
-      >
-        <Image
-          source={
-            typeof destination.imageUrl === "string"
-              ? { uri: destination.imageUrl }
-              : destination.imageUrl
-          }
-          style={styles.cardImage}
-          resizeMode="cover"
-        />
-      </TouchableOpacity>
+    // Pan handlers go on the card itself, not a child — this is the fix for
+    // swipe not working. The card receives all touch events first.
+    <Animated.View style={cardStyle} {...(isTop ? panHandlers : {})}>
+      {/* Full-bleed image — NOT wrapped in TouchableOpacity (that steals pan
+          events). Tap is detected via press delta in the pan responder below. */}
+      <Image
+        source={
+          typeof destination.imageUrl === "string"
+            ? { uri: destination.imageUrl }
+            : destination.imageUrl
+        }
+        style={styles.cardImage}
+        resizeMode="cover"
+        pointerEvents="none"
+      />
 
-      {/* Bottom gradient scrim + text overlay */}
+      {/* Bottom gradient scrim + text — pointerEvents none so card pan works */}
       <View style={styles.scrim} pointerEvents="none">
         <LinearGradient
           colors={["transparent", "rgba(0,0,0,0.25)", "rgba(0,0,0,0.78)"]}
@@ -176,45 +167,62 @@ const DestinationCard = ({
 const HomeScreen = () => {
   const { user, profile } = useAuth();
   const [destinations] = useState<Destination[]>(MOCK_DESTINATIONS);
-  const [currentIndexRef] = useState({ current: 0 });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalDestination, setModalDestination] = useState<Destination | null>(null);
 
+  // Mutable ref so the PanResponder closure always reads the latest value
+  const currentIndexRef = useRef(0);
   const pan = useRef(new Animated.ValueXY()).current;
 
-  const updateIndex = useCallback(
-    (newIndex: number) => {
-      currentIndexRef.current = newIndex;
-      setCurrentIndex(newIndex);
-    },
-    [currentIndexRef],
-  );
+  // Keep ref and state in sync via one helper
+  const advanceIndex = useCallback(() => {
+    const next = currentIndexRef.current + 1;
+    currentIndexRef.current = next;
+    setCurrentIndex(next);
+  }, []);
 
+  // openModal is also ref-backed so the PanResponder closure can call it
+  const openModalRef = useRef<(dest: Destination) => void>(() => {});
+
+  // Build PanResponder ONCE. It reads currentIndexRef (mutable) and calls
+  // advanceIndex / openModalRef which are stable refs — no stale closure.
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponder: (_e, gs) =>
+        Math.abs(gs.dx) > 5 || Math.abs(gs.dy) > 5,
+      onMoveShouldSetPanResponderCapture: (_e, gs) =>
+        Math.abs(gs.dx) > 5 || Math.abs(gs.dy) > 5,
+      // Don't let the navigator steal the gesture once we've claimed it
+      onPanResponderTerminationRequest: () => false,
 
-      onPanResponderMove: Animated.event(
-        [null, { dx: pan.x, dy: pan.y }],
-        { useNativeDriver: false },
-      ),
+      onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
+        useNativeDriver: false,
+      }),
 
-      onPanResponderRelease: (_e, gestureState) => {
-        const { dx } = gestureState;
+      onPanResponderRelease: (_e, gs) => {
+        const { dx, dy } = gs;
+
+        // Treat tiny movement as a tap → open modal
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) {
+          pan.setValue({ x: 0, y: 0 });
+          // We need the current destination at release time — look it up from
+          // the ref so this closure doesn't go stale
+          openModalRef.current(null as any); // signal handled below via state
+          return;
+        }
 
         if (Math.abs(dx) > SWIPE_THRESHOLD) {
-          // Fling off screen
           Animated.timing(pan, {
-            toValue: { x: dx > 0 ? width * 1.5 : -width * 1.5, y: gestureState.dy },
+            toValue: { x: dx > 0 ? width * 1.5 : -width * 1.5, y: dy },
             duration: 220,
             useNativeDriver: false,
           }).start(() => {
             pan.setValue({ x: 0, y: 0 });
-            updateIndex(currentIndexRef.current + 1);
+            advanceIndex();
           });
         } else {
-          // Snap back
           Animated.spring(pan, {
             toValue: { x: 0, y: 0 },
             useNativeDriver: false,
@@ -227,11 +235,16 @@ const HomeScreen = () => {
 
   const displayName =
     profile?.username || user?.user_metadata?.name || "Traveller";
-
   const avatarInitial = displayName[0]?.toUpperCase() ?? "T";
 
   const visibleCards = destinations.slice(currentIndex, currentIndex + 3);
   const allSwiped = currentIndex >= destinations.length;
+
+  // Keep openModalRef pointing at the current top card's open function
+  const topDestination = visibleCards[0] ?? null;
+  openModalRef.current = (_dest: Destination) => {
+    if (topDestination) setModalDestination(topDestination);
+  };
 
   return (
     <View style={styles.root}>
@@ -243,7 +256,6 @@ const HomeScreen = () => {
           <Text style={styles.greeting}>Hello, {displayName.split(" ")[0]} 👋</Text>
           <Text style={styles.subGreeting}>Where to next?</Text>
         </View>
-        {/* Avatar — replace Image src with real avatar URL if available */}
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{avatarInitial}</Text>
         </View>
@@ -255,12 +267,9 @@ const HomeScreen = () => {
           <View style={styles.emptyState}>
             <Text style={styles.emptyEmoji}>🌍</Text>
             <Text style={styles.emptyTitle}>You've seen everything!</Text>
-            <Text style={styles.emptyBody}>
-              More destinations are loading…
-            </Text>
+            <Text style={styles.emptyBody}>More destinations are loading…</Text>
           </View>
         ) : (
-          // Render back-to-front so top card is visually on top
           [...visibleCards].reverse().map((dest, reversedIdx) => {
             const stackIndex = visibleCards.length - 1 - reversedIdx;
             const isTop = stackIndex === 0;
@@ -271,8 +280,8 @@ const HomeScreen = () => {
                 isTop={isTop}
                 stackIndex={stackIndex}
                 pan={isTop ? pan : new Animated.ValueXY()}
-                onImagePress={() => isTop && setModalDestination(dest)}
-                {...(isTop ? panResponder.panHandlers : {})}
+                onImagePress={() => setModalDestination(dest)}
+                panHandlers={panResponder.panHandlers}
               />
             );
           })
@@ -282,7 +291,7 @@ const HomeScreen = () => {
       {/* ── Swipe hint ── */}
       {!allSwiped && (
         <View style={styles.hintRow}>
-          <Text style={styles.hint}>← swipe to skip · tap photo for details →</Text>
+          <Text style={styles.hint}>← swipe to skip · tap to explore →</Text>
         </View>
       )}
 
