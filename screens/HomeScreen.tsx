@@ -11,6 +11,7 @@ import {
   StatusBar,
   Platform,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import DestinationDetailModal, { Destination } from "./DestinationDetailModal";
 import { useAuth } from "@/context/AuthContext";
 
@@ -57,12 +58,12 @@ const MOCK_DESTINATIONS: Destination[] = [
 ];
 
 // ── Swipe thresholds ──────────────────────────────────────────────────────────
-const SWIPE_THRESHOLD = width * 0.35;
-const ROTATION_FACTOR = 12; // degrees at full throw
+const SWIPE_THRESHOLD = width * 0.3;
+const ROTATION_FACTOR = 10; // degrees at full throw
 
-// ── Card dimensions ───────────────────────────────────────────────────────────
-const CARD_WIDTH = width - 40;
-const CARD_IMAGE_HEIGHT = CARD_WIDTH * 0.68;
+// ── Card dimensions — Tinder-style: near full screen ─────────────────────────
+const CARD_WIDTH = width - 32;
+const CARD_HEIGHT = height * 0.72;
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -122,11 +123,11 @@ const DestinationCard = ({
 
   return (
     <Animated.View style={cardStyle}>
-      {/* Image — tappable to open detail */}
+      {/* Full-bleed image — tappable to open detail */}
       <TouchableOpacity
-        activeOpacity={0.92}
+        activeOpacity={0.97}
         onPress={onImagePress}
-        style={styles.imageWrapper}
+        style={StyleSheet.absoluteFill}
       >
         <Image
           source={
@@ -139,25 +140,32 @@ const DestinationCard = ({
         />
       </TouchableOpacity>
 
-      {/* Text content */}
-      <View style={styles.cardBody}>
-        <Text style={styles.cardName}>{destination.name}</Text>
+      {/* Bottom gradient scrim + text overlay */}
+      <View style={styles.scrim} pointerEvents="none">
+        <LinearGradient
+          colors={["transparent", "rgba(0,0,0,0.25)", "rgba(0,0,0,0.78)"]}
+          locations={[0, 0.45, 1]}
+          style={StyleSheet.absoluteFill}
+        />
+        <View style={styles.cardBody}>
+          <Text style={styles.cardName}>{destination.name}</Text>
 
-        <View style={styles.metaRow}>
-          <View style={styles.metaItem}>
-            <Text style={styles.metaLabel}>Distance</Text>
-            <Text style={styles.metaValue}>{distanceLabel}</Text>
+          <View style={styles.metaRow}>
+            <View style={styles.metaItem}>
+              <Text style={styles.metaLabel}>Distance</Text>
+              <Text style={styles.metaValue}>{distanceLabel}</Text>
+            </View>
+            <View style={styles.metaSep} />
+            <View style={styles.metaItem}>
+              <Text style={styles.metaLabel}>Ideal Trip</Text>
+              <Text style={styles.metaValue}>{durationLabel}</Text>
+            </View>
           </View>
-          <View style={styles.metaSep} />
-          <View style={styles.metaItem}>
-            <Text style={styles.metaLabel}>Ideal Trip</Text>
-            <Text style={styles.metaValue}>{durationLabel}</Text>
-          </View>
+
+          <Text style={styles.shortDesc} numberOfLines={2}>
+            {destination.shortDescription}
+          </Text>
         </View>
-
-        <Text style={styles.shortDesc} numberOfLines={2}>
-          {destination.shortDescription}
-        </Text>
       </View>
     </Animated.View>
   );
@@ -302,8 +310,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingTop: Platform.OS === "ios" ? 60 : 44,
-    paddingHorizontal: 22,
-    paddingBottom: 16,
+    paddingHorizontal: 20,
+    paddingBottom: 10,
   },
   greeting: {
     fontSize: 20,
@@ -334,40 +342,48 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 8,
+    marginTop: 4,
   },
 
-  // Card
+  // Card — full-height, image fills everything, text floats over gradient
   card: {
     position: "absolute",
     width: CARD_WIDTH,
-    backgroundColor: "#ffffff",
-    borderRadius: 22,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 18,
-    elevation: 7,
+    height: CARD_HEIGHT,
+    borderRadius: 24,
     overflow: "hidden",
-  },
-  imageWrapper: {
-    width: "100%",
-    height: CARD_IMAGE_HEIGHT,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.22,
+    shadowRadius: 20,
+    elevation: 10,
   },
   cardImage: {
     width: "100%",
     height: "100%",
   },
+  // gradient scrim sits over the image at the bottom
+  scrim: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: CARD_HEIGHT * 0.48,
+    justifyContent: "flex-end",
+  },
   cardBody: {
-    padding: 18,
-    paddingBottom: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 24,
   },
   cardName: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "800",
-    color: "#0f172a",
-    letterSpacing: -0.4,
+    color: "#ffffff",
+    letterSpacing: -0.5,
     marginBottom: 10,
+    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
   metaRow: {
     flexDirection: "row",
@@ -380,24 +396,24 @@ const styles = StyleSheet.create({
   metaSep: {
     width: 1,
     height: 28,
-    backgroundColor: "#e2e8f0",
-    marginHorizontal: 12,
+    backgroundColor: "rgba(255,255,255,0.35)",
+    marginHorizontal: 14,
   },
   metaLabel: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#94a3b8",
-    letterSpacing: 0.3,
+    color: "rgba(255,255,255,0.7)",
+    letterSpacing: 0.4,
     marginBottom: 2,
   },
   metaValue: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#ffffff",
   },
   shortDesc: {
     fontSize: 13,
-    color: "#475569",
+    color: "rgba(255,255,255,0.85)",
     lineHeight: 19,
   },
 
