@@ -9,9 +9,11 @@ import {
   PanResponder,
   StatusBar,
   Platform,
+  TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import DestinationDetailModal, { Destination } from "./DestinationDetailModal";
+import SidePanel from "./SidePanel";
 import { useAuth } from "@/context/AuthContext";
 
 const { width, height } = Dimensions.get("window");
@@ -169,6 +171,7 @@ const HomeScreen = () => {
   const [destinations] = useState<Destination[]>(MOCK_DESTINATIONS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalDestination, setModalDestination] = useState<Destination | null>(null);
+  const [panelVisible, setPanelVisible] = useState(false);
 
   // Mutable ref so the PanResponder closure always reads the latest value
   const currentIndexRef = useRef(0);
@@ -256,9 +259,13 @@ const HomeScreen = () => {
           <Text style={styles.greeting}>Hello, {displayName.split(" ")[0]} 👋</Text>
           <Text style={styles.subGreeting}>Where to next?</Text>
         </View>
-        <View style={styles.avatar}>
+        <TouchableOpacity
+          style={styles.avatar}
+          onPress={() => setPanelVisible(true)}
+          activeOpacity={0.8}
+        >
           <Text style={styles.avatarText}>{avatarInitial}</Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       {/* ── Card deck ── */}
@@ -300,6 +307,12 @@ const HomeScreen = () => {
         destination={modalDestination}
         visible={!!modalDestination}
         onClose={() => setModalDestination(null)}
+      />
+
+      {/* ── Side Panel ── */}
+      <SidePanel
+        visible={panelVisible}
+        onClose={() => setPanelVisible(false)}
       />
     </View>
   );
