@@ -34,3 +34,17 @@ export interface Destination {
   longitude: number;
   created_at: string;
 }
+
+export interface DestinationCard {
+  id: string;
+  name: string;
+  image_url: string | null;
+  short_description: string;
+  tags: string[];
+  trip_duration_min: number;
+  trip_duration_max: number;
+  latitude: number;
+  longitude: number;
+}
+
+export type DestinationDetail = Destination;
