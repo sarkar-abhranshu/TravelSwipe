@@ -1,11 +1,11 @@
 import { haversineDistance } from "./haversine";
-import { Destination } from "../types/database";
+import { Destination, DestinationCard } from "../types/database";
 import { Preferences } from "../types/database";
 
 const NEAR_KM = 500;
 
 export function scoreDestination(
-  destination: Destination,
+  destination: DestinationCard,
   prefs: Preferences,
   userLat: number | null,
   userLon: number | null

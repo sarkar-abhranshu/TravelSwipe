@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { DestinationServices } from "../services/destinationService";
-import { Destination, Preferences } from "../types/database";
+import { Destination, DestinationCard, Preferences } from "../types/database";
 import { scoreDestination } from "../utils/tagScoring";
 
 export const useDestinations = (prefs: Preferences | null) => {
-  const [destinations, setDestinations] = useState<Destination[]>([]);
+  const [destinations, setDestinations] = useState<DestinationCard[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
 
-  const sortBatch = (data: Destination[]): Destination[] => {
+  const sortBatch = (data: DestinationCard[]): DestinationCard[] => {
     if (!prefs) return data;
     return data
       .map(d => ({
@@ -33,7 +33,7 @@ export const useDestinations = (prefs: Preferences | null) => {
         setLoading(true);
         setOffset(0);
         const { data, hasMore, error } = await DestinationServices.fetchBatch(
-          5,
+          3,
           0
         );
         const sorted = sortBatch(data);
@@ -59,7 +59,7 @@ export const useDestinations = (prefs: Preferences | null) => {
     try {
       setLoadingMore(true);
       const { data, hasMore, error } = await DestinationServices.fetchBatch(
-        10,
+        5,
         newOffset
       );
       const sorted = sortBatch(data);
